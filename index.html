@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="theme-color" content="#0a0a0f">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <title>Selina AI - 3D Anime Companion</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <!-- Permission Modal -->
+    <div id="permissionModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-icon">🎤</div>
+            <h2>Enable Microphone</h2>
+            <p>Selina needs microphone access to hear you speak!</p>
+            <button class="btn-primary" onclick="requestMicPermission()">🎤 Enable Microphone</button>
+            <button class="btn-secondary" onclick="skipPermission()">Skip for Now</button>
+        </div>
+    </div>
+
+    <!-- Loading Screen -->
+    <div id="loadingScreen">
+        <div class="loader-container">
+            <div class="loader-avatar">
+                <div class="loader-ring"></div>
+                <span>✨</span>
+            </div>
+            <div class="loader-bar">
+                <div class="loader-progress" id="loadProgress"></div>
+            </div>
+            <p id="loadText">Starting Selina AI...</p>
+            <span id="loadPercent">0%</span>
+        </div>
+    </div>
+
+    <!-- Main App -->
+    <div id="app" class="hidden">
+        <!-- Header -->
+        <header>
+            <div class="header-left">
+                <div class="avatar-badge">
+                    <div class="badge-ring"></div>
+                    <span>✨</span>
+                </div>
+                <div class="header-text">
+                    <h1>Selina AI</h1>
+                    <span class="subtitle">Created by Ashen Editz</span>
+                </div>
+            </div>
+            <div class="header-right">
+                <div class="status" id="statusBadge">
+                    <span class="status-dot"></span>
+                    <span id="statusText">Loading</span>
+                </div>
+            </div>
+        </header>
+
+        <!-- 3D World -->
+        <main id="worldContainer">
+            <canvas id="canvas3D"></canvas>
+            
+            <!-- Controls Panel -->
+            <div class="controls-panel">
+                <div class="control-row">
+                    <span class="control-label">🎨 Outfit</span>
+                    <div class="control-buttons">
+                        <button onclick="changeOutfit('casual')" data-tooltip="Casual">👕</button>
+                        <button onclick="changeOutfit('school')" data-tooltip="School">🎓</button>
+                        <button onclick="changeOutfit('formal')" data-tooltip="Formal">👗</button>
+                        <button onclick="changeOutfit('cyber')" data-tooltip="Cyber">🤖</button>
+                    </div>
+                </div>
+                <div class="control-row">
+                    <span class="control-label">🌍 Scene</span>
+                    <div class="control-buttons">
+                        <button onclick="changeScene('city')" data-tooltip="City">🌃</button>
+                        <button onclick="changeScene('park')" data-tooltip="Park">🌸</button>
+                        <button onclick="changeScene('beach')" data-tooltip="Beach">🏖️</button>
+                        <button onclick="changeScene('space')" data-tooltip="Space">🌌</button>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Emotion Display -->
+            <div class="emotion-display">
+                <span id="emotionIcon">😊</span>
+                <span id="emotionLabel">Happy</span>
+            </div>
+            
+            <!-- Speaking Indicator -->
+            <div id="speakingIndicator" class="speaking-indicator hidden">
+                <div class="wave"><span></span><span></span><span></span><span></span><span></span></div>
+                <span>Speaking...</span>
+            </div>
+        </main>
+
+        <!-- Chat Area -->
+        <section id="chatArea">
+            <div id="chatMessages"></div>
+        </section>
+
+        <!-- Voice Controls -->
+        <footer id="voiceControls">
+            <div id="micStatus" class="mic-status"></div>
+            
+            <button id="voiceButton" class="voice-button">
+                <span id="voiceIcon">🎤</span>
+                <span id="voiceText">Tap to Talk</span>
+            </button>
+            
+            <p class="voice-hint">Tap and speak clearly</p>
+            
+            <div class="quick-buttons">
+                <button onclick="quickChat('greet')">👋 Hi</button>
+                <button onclick="quickChat('help')">📚 Help</button>
+                <button onclick="quickChat('joke')">😄 Joke</button>
+                <button onclick="quickChat('friend')">💖 Friend</button>
+            </div>
+        </footer>
+    </div>
+
+    <!-- Toast Container -->
+    <div id="toastContainer"></div>
+
+    <!-- Scripts -->
+    <script src="https://cdn.jsdelivr.net/npm/three@0.150.0/build/three.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/three@0.150.0/examples/js/controls/OrbitControls.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="database.js"></script>
+    <script src="world-engine.js"></script>
+    <script src="ai-engine.js"></script>
+    <script src="script.js"></script>
+</body>
+</html>
