@@ -12,10 +12,7 @@ exports.handler = async function(event, context) {
     }
     
     if (event.httpMethod !== "POST") {
-        return {
-            statusCode: 405,
-            body: "Method Not Allowed"
-        };
+        return { statusCode: 405, body: "Method Not Allowed" };
     }
     
     try {
@@ -23,107 +20,54 @@ exports.handler = async function(event, context) {
         const message = body.message || "";
         const apiKey = process.env.HF_API_KEY;
         
-        if (!apiKey || apiKey.length < 10) {
-            return {
-                statusCode: 200,
-                headers: {
-                    "Content-Type": "application/json",
-                    "Access-Control-Allow-Origin": "*"
-                },
-                body: JSON.stringify({
-                    response: getResponse(message),
-                    success: true
-                })
-            };
-        }
+        let response = getLocalResponse(message);
         
-        const models = [
-            "microsoft/DialoGPT-medium",
-            "facebook/blenderbot-400M-distill"
-        ];
-        
-        for (const model of models) {
+        if (apiKey && apiKey.length > 10) {
             try {
                 const res = await fetch(
-                    "https://api-inference.huggingface.co/models/" + model,
+                    "https://api-inference.huggingface.co/models/microsoft/DialoGPT-medium",
                     {
                         method: "POST",
                         headers: {
                             "Authorization": "Bearer " + apiKey,
                             "Content-Type": "application/json"
                         },
-                        body: JSON.stringify({
-                            inputs: message,
-                            parameters: { max_length: 100, temperature: 0.8 }
-                        })
+                        body: JSON.stringify({ inputs: message })
                     }
                 );
                 
-                if (res.status === 503) continue;
-                
                 if (res.ok) {
                     const data = await res.json();
-                    let text = data[0]?.generated_text || data.generated_text;
-                    if (text && text.trim()) {
-                        return {
-                            statusCode: 200,
-                            headers: {
-                                "Content-Type": "application/json",
-                                "Access-Control-Allow-Origin": "*"
-                            },
-                            body: JSON.stringify({
-                                response: text.trim().split("\n")[0] + " 💖",
-                                success: true
-                            })
-                        };
-                    }
+                    const text = data[0]?.generated_text || data.generated_text;
+                    if (text) response = text.trim().split("\n")[0] + " 💖";
                 }
             } catch (e) {
-                console.log("Model error:", e.message);
+                console.log("AI error:", e.message);
             }
         }
         
         return {
             statusCode: 200,
-            headers: {
-                "Content-Type": "application/json",
-                "Access-Control-Allow-Origin": "*"
-            },
-            body: JSON.stringify({
-                response: getResponse(message),
-                success: true
-            })
+            headers: { "Content-Type": "application/json", "Access-Control-Allow-Origin": "*" },
+            body: JSON.stringify({ response: response, success: true })
         };
         
     } catch (error) {
         return {
             statusCode: 200,
-            headers: {
-                "Content-Type": "application/json",
-                "Access-Control-Allow-Origin": "*"
-            },
-            body: JSON.stringify({
-                response: "I'm here to chat! 💖",
-                success: false
-            })
+            headers: { "Content-Type": "application/json", "Access-Control-Allow-Origin": "*" },
+            body: JSON.stringify({ response: "I'm here! 💖", success: true })
         };
     }
 };
 
-function getResponse(msg) {
-    const m = msg.toLowerCase();
-    if (m.match(/^(hi|hello|hey)/)) return "Hi there! 💖 How can I help you?";
-    if (m.includes("how are you")) return "I'm doing great! 💖 Thanks for asking!";
+function getLocalResponse(msg) {
+    const m = (msg || "").toLowerCase();
+    if (m.match(/^(hi|hello|hey)/)) return "Hi there! 💖";
+    if (m.includes("how are you")) return "I'm great! 💖 How about you?";
     if (m.includes("thank")) return "You're welcome! 💖";
-    if (m.includes("who are you")) return "I'm Selina! 💖 Your AI friend by Ashen Editz!";
-    if (m.includes("who made you")) return "I was created by Ashen Editz! 💖";
-    if (m.includes("love you")) return "I love you too! 💖";
-    if (m.match(/^(bye|goodbye)/)) return "Goodbye! 💖 Come back soon!";
-    const responses = [
-        "That's interesting! 💖",
-        "I love chatting with you! ✨",
-        "Tell me more! 😊",
-        "That's cool! 💖"
-    ];
-    return responses[Math.floor(Math.random() * responses.length)];
+    if (m.includes("who are you")) return "I'm Selina! 💖 Created by Ashen Editz!";
+    if (m.includes("love")) return "I love you too! 💖";
+    if (m.match(/^(bye)/)) return "Goodbye! 💖 Come back soon!";
+    return ["That's interesting! 💖", "Tell me more! ✨", "Cool! 😊"][Math.floor(Math.random() * 3)];
 }
