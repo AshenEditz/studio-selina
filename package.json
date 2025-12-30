@@ -1,7 +1,6 @@
 {
   "name": "selina-ai",
   "version": "1.0.0",
-  "description": "Selina AI by Ashen Editz",
   "private": true,
   "engines": {
     "node": ">=18.0.0"
