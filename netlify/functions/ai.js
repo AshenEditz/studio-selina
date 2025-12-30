@@ -25,7 +25,7 @@ exports.handler = async function(event, context) {
         if (apiKey && apiKey.length > 10) {
             try {
                 const res = await fetch(
-                    "https://api-inference.huggingface.co/models/microsoft/DialoGPT-medium",
+                    "https://api-inference.huggingface.co/models/google/flan-t5-small",
                     {
                         method: "POST",
                         headers: {
