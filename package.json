@@ -1,0 +1,14 @@
+{
+  "name": "selina-ai",
+  "version": "1.0.0",
+  "description": "Selina AI - 3D Anime Companion by Ashen Editz",
+  "private": true,
+  "scripts": {
+    "start": "echo 'Static site'"
+  },
+  "engines": {
+    "node": ">=18.0.0"
+  },
+  "author": "Ashen Editz",
+  "license": "MIT"
+}
